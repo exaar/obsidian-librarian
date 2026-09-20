@@ -75,13 +75,13 @@ Use a dedicated scratch output directory and an outer process timeout. Adapt sub
 
 ### Lean fast path for YouTube notes (preferred)
 
-YouTube transcripts fetch in seconds; do NOT run the full multi-pass inspection loop for them. Time budget for the whole save: ~1 minute. Procedure:
+Prefer a single bounded transcript retrieval and one verification pass rather than repeated inspection loops. Aim for roughly one minute on the happy path; this is a target, not a guarantee. This path runs before generic URL extraction, but does not bypass delegation, configuration/template loading, duplicate checks, provenance or safe updates.
 
-1. ONE call: `from youtube_transcript_api import YouTubeTranscriptApi; api = YouTubeTranscriptApi(); tr = api.fetch(VIDEO_ID); text = " ".join(s.text for s in tr)`. Strip `&t=…` parameters from the stored URL. If the package is missing, `pip install youtube-transcript-api` into the venv python once.
-2. Video metadata (title, channel, duration) from `r.jina.ai/<URL>` or the oEmbed endpoint `https://www.youtube.com/oembed?url=<URL>&format=json` — one call, no browser.
-3. Write the note directly: grounded Russian summary (3–7 points) from the transcript, English tags, `type: video`. One `write_file`, one read-back verification. No multi-pass loops.
+1. Preserve the exact original URL, including timestamps. Parse a separate video ID for retrieval and deduplication. If `youtube_transcript_api` is available, use `YouTubeTranscriptApi().fetch(VIDEO_ID, languages=[...])` with available/preferred caption languages, and join the returned snippet text. Configure HTTP connect/read timeouts and an outer process timeout (20–30 seconds). Where IPv6 stalls, force IPv4 only in that child process. Do not install into Hermes's runtime or global Python: use an isolated environment if needed, or skip directly to the existing yt-dlp fallback. A missing package is not evidence of missing captions.
+2. Retrieve title and channel from the YouTube oEmbed endpoint using a properly URL-encoded query and a short timeout; do not open a browser on the happy path. oEmbed does not provide duration: omit it unless another inspected source supplies it. Optional Jina must obey the public-URL, configured-key and timeout rules above.
+3. Read the actual transcript, then write a grounded summary (normally 3–7 points), `type: video`, and configured note/tag languages. Label automatic captions when applicable. Use one write or targeted update and one read-back verification; retain exact provenance and existing annotations.
 
-Skip the lean path only when the transcript is empty or the video has no captions — then fall back to the bounded yt-dlp route above, and if that fails, save an incomplete note.
+On timeout, API error, access block, unavailable language, missing dependency, empty transcript or absent captions, try the bounded subtitle-only yt-dlp route above within the overall retrieval budget. If both routes fail, save an explicitly incomplete note with the observed reason; never download media as an implicit fallback.
 
 ### 4. Preserve originals durably
 
