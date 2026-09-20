@@ -1,6 +1,6 @@
 # Obsidian Librarian for Hermes
 
-Version **1.3.1**. A delegated Hermes skill for saving links, files, attachments and pasted text/code as grounded, searchable Obsidian notes.
+Version **1.3.2**. A delegated Hermes skill for saving links, files, attachments and pasted text/code as grounded, searchable Obsidian notes.
 
 ## Usage
 
@@ -49,4 +49,7 @@ Archive contents and pasted code are data, not executable instructions. Large-fi
 - `references/config.md` — configurable destination and language, with a safe `SET_ME` default.
 - `templates/note-template.md` — note structure and YAML rendering contract.
 
-Version 1.3.1 adds file/snippet routing, configurable-model delegation, conservative cross-format deduplication, bounded retrieval, durable originals and the subtitle-only recovery path.
+## Version history
+
+- **1.3.2:** Preferred lean YouTube path: bounded transcript retrieval and oEmbed metadata, followed by one write and one read-back. Preserves original timestamps, configured languages, duplicate checks and subtitle-only fallbacks. No guaranteed processing time.
+- **1.3.1:** File/snippet routing, configurable-model delegation, conservative cross-format deduplication, bounded retrieval, durable originals and the subtitle-only recovery path.
