@@ -1,7 +1,7 @@
 ---
 name: obsidian-librarian
 description: "Use when archiving bare URLs or Obsidian: payloads. Delegate links, files, text and code to the library."
-version: 1.3.1
+version: 1.3.2
 platforms: [windows, linux, macos]
 metadata:
   hermes:
@@ -72,6 +72,16 @@ yt-dlp -4 --ignore-config --socket-timeout 8 --retries 0 --extractor-retries 0 -
 ```
 
 Use a dedicated scratch output directory and an outer process timeout. Adapt subtitle language to available tracks; do not assume every video has English captions. Inspect the actual subtitle text, label automatic captions, and verify no media file was created. Empty timed-text responses do not prove subtitles are absent. Clean only generated scratch files after a verified archive; never delete user originals.
+
+### Lean fast path for YouTube notes (preferred)
+
+YouTube transcripts fetch in seconds; do NOT run the full multi-pass inspection loop for them. Time budget for the whole save: ~1 minute. Procedure:
+
+1. ONE call: `from youtube_transcript_api import YouTubeTranscriptApi; api = YouTubeTranscriptApi(); tr = api.fetch(VIDEO_ID); text = " ".join(s.text for s in tr)`. Strip `&t=…` parameters from the stored URL. If the package is missing, `pip install youtube-transcript-api` into the venv python once.
+2. Video metadata (title, channel, duration) from `r.jina.ai/<URL>` or the oEmbed endpoint `https://www.youtube.com/oembed?url=<URL>&format=json` — one call, no browser.
+3. Write the note directly: grounded Russian summary (3–7 points) from the transcript, English tags, `type: video`. One `write_file`, one read-back verification. No multi-pass loops.
+
+Skip the lean path only when the transcript is empty or the video has no captions — then fall back to the bounded yt-dlp route above, and if that fails, save an incomplete note.
 
 ### 4. Preserve originals durably
 
