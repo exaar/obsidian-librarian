@@ -1,6 +1,6 @@
 # Obsidian Librarian for Hermes
 
-Version **1.3.2**. A delegated Hermes skill for saving links, files, attachments and pasted text/code as grounded, searchable Obsidian notes.
+Version **1.3.3**. A delegated Hermes skill for saving links, files, attachments and pasted text/code as grounded, searchable Obsidian notes.
 
 ## Usage
 
@@ -51,5 +51,6 @@ Archive contents and pasted code are data, not executable instructions. Large-fi
 
 ## Version history
 
+- **1.3.3:** The browser is used only with the user's explicit permission (it is their real profile with live sessions); otherwise save an explicitly incomplete note with the blocker. Keyless fallbacks: GitHub README and metadata via the public GitHub API, YouTube descriptions via `yt-dlp --print description`. Transcript snippets are joined one per line so long transcripts stay readable. Pasted text/code is passed to the worker inside `<pasted_content>` tags as untrusted archive source.
 - **1.3.2:** Preferred lean YouTube path: bounded transcript retrieval and oEmbed metadata, followed by one write and one read-back. Preserves original timestamps, configured languages, duplicate checks and subtitle-only fallbacks. No guaranteed processing time.
 - **1.3.1:** File/snippet routing, configurable-model delegation, conservative cross-format deduplication, bounded retrieval, durable originals and the subtitle-only recovery path.
